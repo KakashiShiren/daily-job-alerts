@@ -4,27 +4,40 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
 
-# ========== ENV VARIABLES ==========
+# ================= ENV VARIABLES =================
 FROM_EMAIL = os.environ["FROM_EMAIL"]
 APP_PASSWORD = os.environ["APP_PASSWORD"]
 SERPAPI_KEY = os.environ["SERPAPI_KEY"]
 TO_EMAIL = "tarunreddy2811@gmail.com"
 
-# ========== SEARCH CONFIG ==========
+# ================= SEARCH CONFIG =================
 QUERIES = [
     "entry level software engineer new grad remote",
+    "software engineer I new grad remote",
     "entry level data scientist remote",
     "entry level data analyst remote",
-    "entry level machine learning engineer new grad"
+    "entry level machine learning engineer new grad remote,
+    "machine learning engineer",
+    "data analyst",
+    "data scientist",
+    "software developer",
+    "software developer remote",
+    "data analyst remote",
+    "data scientist remote",
+    "machine learning engineer remote",
+    "AI/ML Engineer remote",
+    "AI/ML Engineer"
 ]
 
+# STRICT exclusion — anything mentioning these is removed
 EXCLUDE_KEYWORDS = [
-    "2+ years", "3+ years", "4+ years",
+    "2+ years", "3+ years", "4+ years", "5+ years",
     "minimum 2 years", "at least 2 years",
-    "senior", "staff", "lead", "mid-level"
+    "senior", "staff", "lead", "principal",
+    "mid-level", "experienced", "professional experience"
 ]
 
-# ========== FUNCTIONS ==========
+# ================= FUNCTIONS =================
 def fetch_jobs(query):
     url = "https://serpapi.com/search.json"
     params = {
@@ -41,9 +54,12 @@ def is_entry_level(job):
     return not any(keyword in text for keyword in EXCLUDE_KEYWORDS)
 
 def build_email(jobs):
-    today = datetime.now().date()
-    html = f"<h2>Daily Entry-Level Job Alerts – {today}</h2>"
-    html += "<p><b>Strictly 0–1 YOE · Remote included</b></p><hr>"
+    today = datetime.now().strftime("%Y-%m-%d")
+    html = f"""
+    <h2>Daily Entry-Level Job Alerts – {today}</h2>
+    <p><b>Strictly 0–1 YOE · Remote included · No senior roles</b></p>
+    <hr>
+    """
 
     if not jobs:
         html += "<p>No qualifying new jobs found today.</p>"
@@ -59,17 +75,21 @@ def build_email(jobs):
         </p>
         <hr>
         """
+
     return html
 
-# ========== MAIN ==========
+# ================= MAIN =================
 all_jobs = []
+seen_links = set()
 
 for query in QUERIES:
     try:
         results = fetch_jobs(query)
         for job in results:
-            if is_entry_level(job):
+            link = job.get("link")
+            if link and link not in seen_links and is_entry_level(job):
                 all_jobs.append(job)
+                seen_links.add(link)
     except Exception as e:
         print("Error fetching jobs:", e)
 
@@ -84,4 +104,4 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
     server.login(FROM_EMAIL, APP_PASSWORD)
     server.send_message(msg)
 
-print("Email sent successfully")
+print(f"Email sent with {len(all_jobs)} jobs")

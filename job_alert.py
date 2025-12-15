@@ -29,12 +29,12 @@ QUERIES = [
     "AI/ML Engineer"
 ]
 
-# STRICT exclusion — anything mentioning these is removed
+# Only EXPLICIT experience requirements are rejected
 EXCLUDE_KEYWORDS = [
     "2+ years", "3+ years", "4+ years", "5+ years",
     "minimum 2 years", "at least 2 years",
     "senior", "staff", "lead", "principal",
-    "mid-level", "experienced", "professional experience"
+    "mid-level", "experienced professional"
 ]
 
 # ================= FUNCTIONS =================
@@ -50,14 +50,25 @@ def fetch_jobs(query):
     return response.json().get("jobs_results", [])
 
 def is_entry_level(job):
+    """
+    Accept if:
+    - No explicit 2+ year requirement is mentioned
+    Reject if:
+    - Explicit 2+ years / senior language is present
+    """
     text = (job.get("description") or "").lower()
-    return not any(keyword in text for keyword in EXCLUDE_KEYWORDS)
+
+    for keyword in EXCLUDE_KEYWORDS:
+        if keyword in text:
+            return False
+
+    return True
 
 def build_email(jobs):
     today = datetime.now().strftime("%Y-%m-%d")
     html = f"""
     <h2>Daily Entry-Level Job Alerts – {today}</h2>
-    <p><b>Strictly 0–1 YOE · Remote included · No senior roles</b></p>
+    <p><b>0–1 YOE · Remote included · No senior roles</b></p>
     <hr>
     """
 

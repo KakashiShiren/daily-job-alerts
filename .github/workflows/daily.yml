@@ -2,7 +2,7 @@ name: Daily Entry-Level Job Alert
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # Runs every day at 1:00 AM Eastern Time
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -24,4 +24,7 @@ jobs:
           pip install requests
 
       - name: Run job alert
+        env:
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
         run: python job_alert.py

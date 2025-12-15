@@ -2,7 +2,7 @@ name: Daily Entry-Level Job Alert
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 6 * * *'   # 1:00 AM Eastern Time
   workflow_dispatch:
 
 jobs:
@@ -27,4 +27,5 @@ jobs:
         env:
           FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
           APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
         run: python job_alert.py

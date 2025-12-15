@@ -16,7 +16,7 @@ QUERIES = [
     "software engineer I new grad remote",
     "entry level data scientist remote",
     "entry level data analyst remote",
-    "entry level machine learning engineer new grad remote,
+    "entry level machine learning engineer new grad remote",
     "machine learning engineer",
     "data analyst",
     "data scientist",

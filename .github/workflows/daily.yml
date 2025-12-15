@@ -1,0 +1,21 @@
+name: Daily Entry-Level Job Alert
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Runs every day at 1:00 AM Eastern Time
+  workflow_dispatch:
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run job alert
+        run: python job_alert.py
